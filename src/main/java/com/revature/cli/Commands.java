@@ -14,7 +14,7 @@ public final class Commands {
 	 * Interpret the CLI type of a string's contents
 	 * @param value Value to interpret
 	 * @return "integer", "float", or "string" depending on how the passed in value is interpreted.
-	 */
+	 *
 	private static String getValueType(String value) {
 		boolean i = false;
 		try {
@@ -32,7 +32,7 @@ public final class Commands {
 	 * Convert a Java type to a CLI type
 	 * @param type String value of the type to convert
 	 * @return "integer", "float", or "string" depending on how the passed in value is interpreted.
-	 */
+	 *
 	private static String getType(String type) {		
 		switch (type.toLowerCase()) {
 		case "int":
@@ -48,10 +48,12 @@ public final class Commands {
 	 * Get the CLI type of a parameter
 	 * @param param
 	 * @return
-	 */
+	 *
 	private static String getType(Parameter param) {
 		return getType(param.getType().getName());		
 	}
+	
+	*/
 	
 	
 	/**
@@ -60,23 +62,9 @@ public final class Commands {
 	 * @param method Method to check
 	 * @return If the command matches the method's signature
 	 */
-	public static boolean CommandMatches(String[] command, Method method) {
+	public static boolean CommandMatches(String command, Method method) {
 		// Check command name matches
-		if (!command[0].equals(MethodToCommand(method)))
-			return false;
-		
-		// Check number of parameters matches
-		if (command.length-1 != method.getParameterCount())
-			return false;
-		
-		// Check parameter types match
-		int i = 0;
-		for (Parameter param : method.getParameters()) {
-			if (!getValueType(command[++i]).equals(getType(param)))
-				return false;
-		}
-		
-		return true;
+		return !command.equals(MethodToCommand(method));
 	}
 	
 	

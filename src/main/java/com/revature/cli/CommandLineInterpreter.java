@@ -16,13 +16,13 @@ import java.util.Scanner;
 public class CommandLineInterpreter {
 	private Scanner in = new Scanner(System.in);
 
-	public Scanner In() {
+	public Scanner InStream() {
 		return in;
 	}
 
 	private PrintStream out = System.out;
 
-	public PrintStream Out() {
+	public PrintStream OutStream() {
 		return out;
 	}
 
@@ -78,26 +78,26 @@ public class CommandLineInterpreter {
 	public void Start() throws IllegalStateException {
 		if (system == null)
 			throw new IllegalStateException("Cannot start without a command system.");
-		String line = "";
-		String[] command;
-		boolean command_found;
+		String command = "";
+		boolean command_found = false;
 
 		while (true) {
-			line = GetCommandInputFromPrompt();
-			if (line.equals(system.TerminatingCommand()))
+			command = GetCommandInputFromPrompt();
+			if (command.equals(system.TerminatingCommand()))
 				break;
-			command = line.split(" ");
 
 			for (Method method : system.getClass().getMethods())
 
 				if (Commands.CommandMatches(command, method)) {
 					try {
-						method.invoke(system, new Object[] { Arrays.copyOfRange(command, 1, 3) });
+						method.invoke(system);
 						break;
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						e.printStackTrace();
 					}
 				}
+			if (!command_found)
+				System.out.println("Error: command not found. Use 'help' to see a list of available commands.");
 		}
 	}
 
