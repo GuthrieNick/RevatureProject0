@@ -87,7 +87,6 @@ public class CommandLineInterpreter {
 				break;
 
 			for (Method method : system.getClass().getMethods())
-
 				if (Commands.CommandMatches(command, method)) {
 					try {
 						if (method.getReturnType() != void.class)
