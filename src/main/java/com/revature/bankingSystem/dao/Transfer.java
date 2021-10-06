@@ -1,26 +1,57 @@
 package com.revature.bankingSystem.dao;
 
-public class Transfer extends BankDao {
-	private int sender_id;
-	private int receiver_id;
+import java.sql.Timestamp;
+
+public class Transfer {
+	private int senderId;
+	private int receiverId;
 	private double amount;
-	private String datetime;
-	
-	
-	
-	public Transfer(int sender_id, int receiver_id, double amount, String datetime) {
+	private Timestamp datetime;
+
+	public Transfer(int senderId, int receiverId, double amount, Timestamp datetime) {
 		super();
-		this.sender_id = sender_id;
-		this.receiver_id = receiver_id;
+		this.senderId = senderId;
+		this.receiverId = receiverId;
 		this.amount = amount;
 		this.datetime = datetime;
 	}
 
+	public int getSenderId() {
+		return senderId;
+	}
 
+	public void setSenderId(int senderId) {
+		this.senderId = senderId;
+	}
+
+	public int getReceiverId() {
+		return receiverId;
+	}
+
+	public void setReceiverId(int receiverId) {
+		this.receiverId = receiverId;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+
+	public Timestamp getDatetime() {
+		return datetime;
+	}
+
+	public void setDatetime(Timestamp datetime) {
+		this.datetime = datetime;
+	}
 
 	@Override
-	public String getValues() {
-		return String.format("(%d, %d, %f, %s)", sender_id, receiver_id, amount, datetime);
+	public String toString() {
+		return "Transfer [senderId=" + senderId + ", receiverId=" + receiverId + ", amount=" + amount + ", datetime="
+				+ datetime + "]";
 	}
 
 }

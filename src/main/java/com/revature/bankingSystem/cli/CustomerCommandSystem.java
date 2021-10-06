@@ -20,8 +20,10 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 			else
 				TellUser("Error: Input must be 'S' or 'C'.");
 		}
+		
+		
 		return null;
-		
-		
 	}
 }
+
+

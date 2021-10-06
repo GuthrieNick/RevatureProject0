@@ -1,6 +1,6 @@
 package com.revature.bankingSystem.dao;
 
-public class Account extends BankDao {
+public class Account {
 	public enum Type { Savings, Checking };
 	int owner_id;
 	Type type;
@@ -26,10 +26,5 @@ public class Account extends BankDao {
 	
 	public double deposit(double amount) {
 		return this.balance += amount;
-	}
-	
-	@Override
-	public String getValues() {
-		return String.format("(%d, %d, %f)", owner_id, type.ordinal(), balance);
 	}
 }
