@@ -13,13 +13,6 @@ public class Bank {
 	
 	public static boolean UserNameExists(String name) { return false; }
 	
-	
-	
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
-	
 	/**
 	 * Attempt to log in a user with supplied credentials
 	 * @param username User's username
@@ -67,5 +60,15 @@ public class Bank {
 	 */
 	public static User CreateAccount(String username, String password) {
 		return new User(username, password);
+	}
+	
+	
+	
+	@Override
+	/**
+	 * Cloning this object is not supported
+	 */
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
 	}
 }

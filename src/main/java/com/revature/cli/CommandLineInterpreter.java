@@ -90,7 +90,8 @@ public class CommandLineInterpreter {
 
 				if (Commands.CommandMatches(command, method)) {
 					try {
-						method.invoke(system);
+						if (method.getReturnType() != void.class)
+							System.out.println(method.getReturnType().cast(method.invoke(system)));
 						break;
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						e.printStackTrace();

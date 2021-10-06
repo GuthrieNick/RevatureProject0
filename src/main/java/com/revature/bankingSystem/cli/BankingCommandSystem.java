@@ -11,7 +11,7 @@ public abstract class BankingCommandSystem extends CommandSystem {
 	}
 
 	@Override
-	public String InputPrompt() { return person.getUsername() + ">>>"; }
+	public String InputPrompt() { return person.getLevel() + ":" + person.getUsername() + ">>>"; }
 	@Override
 	public String TerminatingCommand() { return "logout"; }
 

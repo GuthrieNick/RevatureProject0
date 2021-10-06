@@ -1,6 +1,8 @@
 package com.revature.cli;
 
 import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -9,6 +11,20 @@ import java.lang.reflect.*;
  */
 public abstract class CommandSystem {
 	private CommandLineInterpreter cli;
+	
+	public CommandSystem() {
+		List<Method> badCommands = new ArrayList<Method>();
+		for (Method method : getClass().getMethods()) {
+			if (method.getAnnotation(Command.class) != null && method.getParameterCount() > 0)
+				badCommands.add(method);
+		}
+		if (badCommands.size() != 0) {
+			StringBuilder sb = new StringBuilder("Error: Cannot continue. The following methods must have their arguments removed:\n");
+			for (Method method : badCommands)
+				sb.append(method.toString()).append('\n');
+			throw new java.lang.Error(sb.toString());
+		}
+	}
 
 	/**
 	 * Constructor that takes in a command line interpreter.
@@ -57,6 +73,8 @@ public abstract class CommandSystem {
 					.append(annotation.brief())
 					.append('\n');
 		}
+		
+		msg.append(TerminatingCommand()).append(": Exit the system\n");
 		
 		return msg.toString();
 	}
