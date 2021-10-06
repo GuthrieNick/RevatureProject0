@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>9</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>45</x>
+      <y>315</y>
+      <w>207</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>_Person: DAO_
+--
+-username: String
+-type : enum (int)
+--
++getUsername() : String
++getType() : enum (int)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>54</x>
+      <y>36</y>
+      <w>189</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>_Account: DAO_
+--
+id : int
+type : enum (int)
+balance : double</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>387</x>
+      <y>315</y>
+      <w>189</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>_Application: DAO_
+--
+id : int
+customer : String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>198</x>
+      <y>216</y>
+      <w>225</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>_Bank: Class_
+--
++GetNextApplication : Application sync
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>144</x>
+      <y>252</y>
+      <w>72</w>
+      <h>81</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>60.0;10.0;10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>216</x>
+      <y>99</y>
+      <w>36</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=*
+m2=1
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>414</x>
+      <y>243</y>
+      <w>108</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=*
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;100.0;10.0;100.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>261</x>
+      <y>36</y>
+      <w>189</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>_Transfer : DAO_
+// Transaction between any two accounts
+// Amount must be positive
+--
+sender : int
+receiver : int
+amount : double</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>342</x>
+      <y>126</y>
+      <w>189</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>_Transaction_
+// Transaction between account and outside entity
+// Amount is how much is removed from the acct
+// Negative amount means amount is given to acct
+--
+acct : int
+amount : double
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>18</x>
+      <y>459</y>
+      <w>252</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>DAO = Class meant to represent a DB table</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
