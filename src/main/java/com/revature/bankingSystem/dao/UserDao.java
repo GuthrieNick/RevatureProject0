@@ -13,9 +13,9 @@ import com.revature.exceptions.UserDoesNotExistException;
 
 
 public class UserDao {
-	ConnectionUtil conUtil = ConnectionUtil.getConnectionUtil();
+	private static ConnectionUtil conUtil = ConnectionUtil.getConnectionUtil();
 	
-	public List<User> getAllUsers() {
+	public static List<User> getAllUsers() {
 		Connection con = conUtil.getConnection();
 		String sql = "SELECT * from users";
 		List<User> users = new ArrayList<User>();
@@ -34,7 +34,7 @@ public class UserDao {
 		return null;
 	}
 	
-	User getUserByUsername(String username) throws UserDoesNotExistException {
+	public static User getUserByUsername(String username) {
 		Connection con = conUtil.getConnection();
 		String sql = "SELECT * FROM users WHERE username=?";
 		try {
@@ -42,9 +42,8 @@ public class UserDao {
 			ps.setString(1, username);
 			ResultSet rs = ps.executeQuery();
 			
-			if (rs.isBeforeFirst())
+			while (rs.next())
 				return new User(rs.getInt(1), rs.getString(2), rs.getString(3), User.Level.values()[rs.getInt(4)]);
-			throw new UserDoesNotExistException();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -52,7 +51,7 @@ public class UserDao {
 		return null;		
 	}
 	
-	void createUser(User user) throws SQLException {
+	public static void createUser(User user) throws SQLException {
 		Connection con = conUtil.getConnection();
 		String sql = "INSERT INTO users (username, password, level) VALUES (?,?,?)";
 		
@@ -63,7 +62,7 @@ public class UserDao {
 		ps.execute();
 	}
 	
-	void updateUser(User user) {
+	public static void updateUser(User user) {
 		Connection con = conUtil.getConnection();
 		String sql = "UPDATE users SET username=?, password=?, level=? WHERE id=?";
 		try {
@@ -79,7 +78,7 @@ public class UserDao {
 		
 	}
 	
-	void deleteUser(User user) {
+	public static void deleteUser(User user) {
 		Connection con = conUtil.getConnection();
 		String sql = "DELETE FROM users WHERE id=?";
 		try {

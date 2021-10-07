@@ -1,7 +1,7 @@
 package com.revature.bankingSystem.models;
 
 import com.revature.exceptions.InvalidCredentialsException;
-import com.revature.exceptions.InvalidUsernameException;
+import com.revature.exceptions.UsernameExistsException;
 
 /**
  * Class representing the Bank's database.
@@ -27,25 +27,25 @@ public class Bank {
 	/**
 	 * Throws an error if the passed in username is invalid
 	 * @param username Username to check
-	 * @throws InvalidUsernameException If the username is invalid, the message of this error will explain why.
+	 * @throws UsernameExistsException If the username is invalid, the message of this error will explain why.
 	 */
-	public static void CheckUsername(String username) throws InvalidUsernameException {
+	public static void CheckUsername(String username) throws UsernameExistsException {
 		for (int i = 0; i < username.length(); i++)
 			if (Character.isWhitespace(username.charAt(i)))
-				throw new InvalidUsernameException("Username cannot contain whitespace.");
+				throw new UsernameExistsException("Username cannot contain whitespace.");
 		
 	
 		if (username.length() == 0)
-			throw new InvalidUsernameException("You did not enter a username.");
+			throw new UsernameExistsException("You did not enter a username.");
 		
 		else if (!Character.isAlphabetic(username.charAt(0)))
-			throw new InvalidUsernameException("First character must be alphabetic.");
+			throw new UsernameExistsException("First character must be alphabetic.");
 		
 		else if (username.length() > 24)
-			throw new InvalidUsernameException("Username cannot be longer than 24 characters.");
+			throw new UsernameExistsException("Username cannot be longer than 24 characters.");
 		
 		else if (Bank.UserNameExists(username))
-			throw new InvalidUsernameException("Username is already taken.");
+			throw new UsernameExistsException("Username is already taken.");
 	}
 	
 	public static boolean ValidPassword(String password) {
