@@ -24,6 +24,14 @@ public class User {
 		this.level = level;
 	}
 
+	public User(int id, String username, String password, Level level) {
+		super();
+		this.level = level;
+		this.id = id;
+		this.username = username;
+		this.password = password;
+	}
+
 	public Level getLevel() {
 		return level;
 	}

@@ -129,4 +129,8 @@ public class CommandLineInterpreter {
 	public void SetCommandSystem(CommandSystem system) {
 		this.system = system;
 	}
+	
+	public void SetInputStream(InputStream in) {
+		this.in = new Scanner(in);
+	}
 }

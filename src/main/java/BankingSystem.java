@@ -4,6 +4,7 @@ import java.util.Scanner;
 import com.revature.bankingSystem.cli.AdminCommandSystem;
 import com.revature.bankingSystem.cli.CustomerCommandSystem;
 import com.revature.bankingSystem.cli.EmployeeCommandSystem;
+import com.revature.bankingSystem.dao.UserDao;
 import com.revature.bankingSystem.models.Bank;
 import com.revature.bankingSystem.models.User;
 import com.revature.cli.CommandLineInterpreter;
@@ -28,6 +29,11 @@ public class BankingSystem {
 	 */
 	public static void main(String[] args) {
 		User person;
+		
+		System.out.println("Testing getting all users:");
+		UserDao udao = new UserDao();
+		for (User user : udao.getAllUsers())
+			System.out.println(user);
 		
 		if (args[1] == "-n") {
 			System.out.println("Welcome new user!");
