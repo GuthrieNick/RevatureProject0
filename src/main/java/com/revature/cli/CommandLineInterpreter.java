@@ -78,18 +78,22 @@ public class CommandLineInterpreter {
 		if (system == null)
 			throw new IllegalStateException("Cannot start without a command system.");
 		String command = "";
-		boolean command_found = false;
+		boolean command_found;
 
 		while (true) {
+			command_found = false;
 			command = GetCommandInputFromPrompt();
 			if (command.equals(system.TerminatingCommand()))
 				break;
 
 			for (Method method : system.getClass().getMethods())
-				if (Commands.CommandMatches(command, method)) {
+				if (Commands.CommandMatches(command, method) && method.getAnnotation(Command.class) != null) {
+					command_found = true;
 					try {
-						if (method.getReturnType() != void.class)
-							System.out.println(method.getReturnType().cast(method.invoke(system)));
+						if (method.getReturnType() != void.class) {
+							System.out.println(method.invoke(system));
+						}
+						else method.invoke(system);
 						break;
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						e.printStackTrace();

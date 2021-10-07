@@ -64,7 +64,7 @@ public final class Commands {
 	 */
 	public static boolean CommandMatches(String command, Method method) {
 		// Check command name matches
-		return !command.equals(MethodToCommand(method));
+		return command.equals(MethodToCommand(method));
 	}
 	
 	
@@ -77,12 +77,16 @@ public final class Commands {
 	 */
 	public static String MethodToCommand(String method) {
 		StringBuilder command = new StringBuilder();
+		boolean last_was_upper = false;
 		for (int i = 0; i < method.length(); i++) {
-			if (Character.isUpperCase(method.charAt(i))) {
-				if (command.length() != 0)
+			
+			// Current character is upper case and not the first character
+			if (Character.isUpperCase(method.charAt(i)) && command.length() != 0) {
+				if (last_was_upper == false)
 					command.append("-");
-				command.append(Character.toLowerCase(method.charAt(i)));
-			}
+				last_was_upper = true;
+			} else last_was_upper = false;
+			command.append(Character.toLowerCase(method.charAt(i)));
 		}
 		
 		return command.toString();
