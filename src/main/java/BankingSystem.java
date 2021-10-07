@@ -21,6 +21,13 @@ import com.revature.log.Logging;
 public class BankingSystem {
 
 	public static final Scanner scanner = new Scanner(System.in);
+	
+	public static boolean isValidUsername(String username) {
+		for (char i : username.toCharArray())
+			if (!Character.isLetterOrDigit(i))
+				return false;
+		return true;
+	}
 
 	/**
 	 * Program execution starts here. Prompt user to enter credentials or create an
@@ -42,9 +49,12 @@ public class BankingSystem {
 				System.out.print("Enter your desired username: ");
 				user = scanner.nextLine();
 				if (UserDao.getUserByUsername(user) != null) {
-					Logging.logger.warn("User supplied invalid username");
+					Logging.logger.warn("User supplied username already in DB");
 					System.out.println("Error: Username already exists.");
-				} else break;
+				} else if (!isValidUsername(user)) {
+					Logging.logger.warn("User supplied invalid username");
+					System.out.println("Error: Usernames must only contain letters and numbers.");
+				}else break;
 			} while (true);
 
 			// Get password
