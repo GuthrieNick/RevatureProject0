@@ -3,7 +3,6 @@ package com.revature.cli;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**
