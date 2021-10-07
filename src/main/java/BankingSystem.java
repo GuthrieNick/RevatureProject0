@@ -1,11 +1,11 @@
-package com.revature.bankingSystem;
+
 import java.util.Scanner;
 
 import com.revature.bankingSystem.cli.AdminCommandSystem;
 import com.revature.bankingSystem.cli.CustomerCommandSystem;
 import com.revature.bankingSystem.cli.EmployeeCommandSystem;
-import com.revature.bankingSystem.dao.Bank;
-import com.revature.bankingSystem.dao.User;
+import com.revature.bankingSystem.models.Bank;
+import com.revature.bankingSystem.models.User;
 import com.revature.cli.CommandLineInterpreter;
 import com.revature.exceptions.InvalidUsernameException;
 

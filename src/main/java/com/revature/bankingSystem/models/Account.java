@@ -1,4 +1,4 @@
-package com.revature.bankingSystem.dao;
+package com.revature.bankingSystem.models;
 
 public class Account {
 	public enum Type { Savings, Checking };

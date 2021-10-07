@@ -1,4 +1,4 @@
-package com.revature.bankingSystem.dao;
+package com.revature.bankingSystem.models;
 
 import java.sql.Timestamp;
 

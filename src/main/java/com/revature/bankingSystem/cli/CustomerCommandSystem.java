@@ -1,6 +1,6 @@
 package com.revature.bankingSystem.cli;
 
-import com.revature.bankingSystem.dao.User;
+import com.revature.bankingSystem.models.User;
 import com.revature.cli.Command;
 
 public class CustomerCommandSystem extends BankingCommandSystem {
