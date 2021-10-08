@@ -44,6 +44,7 @@ public class CommandLineInterpreter {
 	public CommandLineInterpreter(CommandSystem system) {
 		this();
 		this.system = system;
+		system.SetCLI(this);
 	}
 
 	/**
@@ -55,6 +56,7 @@ public class CommandLineInterpreter {
 	public CommandLineInterpreter(CommandSystem system, InputStream stream) {
 		this();
 		this.system = system;
+		system.SetCLI(this);
 		in = new Scanner(stream);
 	}
 
@@ -69,6 +71,7 @@ public class CommandLineInterpreter {
 	 */
 	public CommandLineInterpreter(CommandSystem system, InputStream istream, PrintStream ostream) {
 		this.system = system;
+		system.SetCLI(this);
 		if (istream != null)
 			in = new Scanner(istream);
 		if (out != null)
@@ -139,6 +142,7 @@ public class CommandLineInterpreter {
 	 */
 	public void SetCommandSystem(CommandSystem system) {
 		this.system = system;
+		system.SetCLI(this);
 	}
 
 	public void SetInputStream(InputStream in) {

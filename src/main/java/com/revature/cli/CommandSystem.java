@@ -11,7 +11,12 @@ import java.util.List;
  */
 public abstract class CommandSystem {
 	private CommandLineInterpreter cli;
-	
+
+	/**
+	 * No argument constructor. Checks to make sure no commands have any parameters,
+	 * otherwise throws an error stopping program execution until the parameters are
+	 * removed.
+	 */
 	public CommandSystem() {
 		List<Method> badCommands = new ArrayList<Method>();
 		for (Method method : getClass().getMethods()) {
@@ -19,7 +24,8 @@ public abstract class CommandSystem {
 				badCommands.add(method);
 		}
 		if (badCommands.size() != 0) {
-			StringBuilder sb = new StringBuilder("Error: Cannot continue. The following methods must have their arguments removed:\n");
+			StringBuilder sb = new StringBuilder(
+					"Error: Cannot continue. The following methods must have their arguments removed:\n");
 			for (Method method : badCommands)
 				sb.append(method.toString()).append('\n');
 			throw new java.lang.Error(sb.toString());
@@ -27,16 +33,28 @@ public abstract class CommandSystem {
 	}
 
 	/**
-	 * Constructor that takes in a command line interpreter.
+	 * Tell the system what command line interpreter to use for input/output.
+	 * Used in the CommandLineInterpreter constructor.
 	 * 
 	 * @param cli Command line interpreter associated with this command system.
 	 */
-	public void SetCLI(CommandLineInterpreter cli) {
+	void SetCLI(CommandLineInterpreter cli) {
 		this.cli = cli;
 	}
 
+	/**
+	 * The command the user can use to exit the command system
+	 * 
+	 * @return Command string
+	 */
 	public abstract String TerminatingCommand();
 
+	/**
+	 * This is printed at the start of every line when a command is not currently
+	 * being processed.
+	 * 
+	 * @return String to print to the user
+	 */
 	public abstract String InputPrompt();
 
 	/**
@@ -56,26 +74,26 @@ public abstract class CommandSystem {
 
 	/**
 	 * Displays the list of commands available to the user
+	 * 
 	 * @return String holding contents of the help message
 	 */
-	@Command(brief="Displays the list of commands available to the user.")
+	@Command(brief = "Displays the list of commands available to the user.")
 	public final String help() {
 		StringBuilder msg = new StringBuilder();
 		Command annotation;
-		
-		// Iterate through every method skipping ones that don't have the Command annotation
-		// Add the command version of the method and its command brief to the string builder
+
+		// Iterate through every method skipping ones that don't have the Command
+		// annotation
+		// Add the command version of the method and its command brief to the string
+		// builder
 		for (Method method : getClass().getMethods()) {
 			annotation = method.getDeclaredAnnotation(Command.class);
 			if (annotation != null)
-				msg.append(Commands.MethodToCommand(method))
-					.append(": ")
-					.append(annotation.brief())
-					.append('\n');
+				msg.append(Commands.MethodToCommand(method)).append(": ").append(annotation.brief()).append('\n');
 		}
-		
+
 		msg.append(TerminatingCommand()).append(": Exit the system\n");
-		
+
 		return msg.toString();
 	}
 }

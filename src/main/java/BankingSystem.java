@@ -2,8 +2,8 @@
 //TODO: Customers applying for accounts updates the database
 //TODO: Test service layer and command line interpreter
 //TODO: Employees can approve/deny accounts
-//TODO: Implement joint accounts (change model to inherit from accounts)
-//TODO: Create a stored procedure or trigger
+//TODO: Implement joint accounts 
+//TODO: Create a stored procedur or trigger
 //TODO: Changing passwords
 //TODO: Admins creating new employee accounts
 import java.util.Scanner;

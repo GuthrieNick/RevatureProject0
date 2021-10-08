@@ -50,7 +50,7 @@ public class UserDao {
 		return null;		
 	}
 	
-	public static void createUser(User user) throws SQLException {
+	public static boolean createUser(User user) throws SQLException {
 		Connection con = conUtil.getConnection();
 		String sql = "INSERT INTO users (username, password, level) VALUES (?,?,?)";
 		
@@ -58,10 +58,10 @@ public class UserDao {
 		ps.setString(4, user.getUsername());
 		ps.setString(5, user.getPassword());
 		ps.setInt(3, user.getLevel().ordinal());
-		ps.execute();
+		return ps.execute();
 	}
 	
-	public static void updateUser(User user) {
+	public static boolean updateUser(User user) {
 		Connection con = conUtil.getConnection();
 		String sql = "UPDATE users SET username=?, password=?, level=? WHERE id=?";
 		try {
@@ -70,22 +70,25 @@ public class UserDao {
 			ps.setString(2, user.getPassword());
 			ps.setInt(3, user.getLevel().ordinal());
 			ps.setInt(4, user.getId());
-			ps.execute();
+			return ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
+		return false;
 	}
 	
-	public static void deleteUser(User user) {
+	public static boolean deleteUser(User user) {
 		Connection con = conUtil.getConnection();
 		String sql = "DELETE FROM users WHERE id=?";
 		try {
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setInt(1, user.getId());
-			ps.execute();
+			return ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return false;
 	}
 }

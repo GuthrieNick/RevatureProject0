@@ -36,11 +36,11 @@ public class Application {
 		this.user_id = user_id;
 	}
 
-	public Account.Type getAcct_type() {
+	public Account.Type getAcctType() {
 		return acct_type;
 	}
 
-	public void setAcct_type(Account.Type acct_type) {
+	public void setAcctType(Account.Type acct_type) {
 		this.acct_type = acct_type;
 	}
 

@@ -18,11 +18,10 @@ public class Account {
 		this.balance = balance;
 	}
 
-	public Account(int owner_id, Type type, double balance) {
+	public Account(int owner_id, Type type) {
 		super();
 		this.owner_id = owner_id;
 		this.type = type;
-		this.balance = balance;
 	}
 
 	public int getId() {
