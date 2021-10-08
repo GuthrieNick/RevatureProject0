@@ -1,11 +1,17 @@
-
+//TODO: Documentation
+//TODO: Customers applying for accounts updates the database
+//TODO: Test service layer and command line interpreter
+//TODO: Employees can approve/deny accounts
+//TODO: Implement joint accounts (change model to inherit from accounts)
+//TODO: Create a stored procedure or trigger
+//TODO: Changing passwords
+//TODO: Admins creating new employee accounts
 import java.util.Scanner;
 
 import com.revature.bankingSystem.cli.AdminCommandSystem;
 import com.revature.bankingSystem.cli.CustomerCommandSystem;
 import com.revature.bankingSystem.cli.EmployeeCommandSystem;
 import com.revature.bankingSystem.dao.UserDao;
-import com.revature.bankingSystem.models.Bank;
 import com.revature.bankingSystem.models.User;
 import com.revature.bankingSystem.services.UserService;
 import com.revature.cli.CommandLineInterpreter;

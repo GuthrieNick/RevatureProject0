@@ -13,22 +13,27 @@ import java.util.Scanner;
  *
  */
 public class CommandLineInterpreter {
-	private Scanner in = new Scanner(System.in);
+	private static Scanner in = new Scanner(System.in);
 
-	public Scanner InStream() {
+	public static Scanner InStream() {
 		return in;
 	}
 
-	private PrintStream out = System.out;
+	private static PrintStream out = System.out;
 
-	public PrintStream OutStream() {
+	public static PrintStream OutStream() {
 		return out;
 	}
 
 	private CommandSystem system = null;
 
-	/** No argument constructor. Sets the input stream to System.in. */
+	/**
+	 * No argument constructor. Sets the input stream to System.in and the output
+	 * stream to System.out.
+	 */
 	public CommandLineInterpreter() {
+		in = new Scanner(System.in);
+		out = System.out;
 	}
 
 	/**
@@ -37,6 +42,7 @@ public class CommandLineInterpreter {
 	 * @param system CommandSystem that this interpreter will be interacting with
 	 */
 	public CommandLineInterpreter(CommandSystem system) {
+		this();
 		this.system = system;
 	}
 
@@ -47,6 +53,7 @@ public class CommandLineInterpreter {
 	 * @param stream Stream where commands will be coming from.
 	 */
 	public CommandLineInterpreter(CommandSystem system, InputStream stream) {
+		this();
 		this.system = system;
 		in = new Scanner(stream);
 	}
@@ -92,8 +99,8 @@ public class CommandLineInterpreter {
 					try {
 						if (method.getReturnType() != void.class) {
 							System.out.println(method.invoke(system));
-						}
-						else method.invoke(system);
+						} else
+							method.invoke(system);
 						break;
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						e.printStackTrace();
@@ -133,7 +140,7 @@ public class CommandLineInterpreter {
 	public void SetCommandSystem(CommandSystem system) {
 		this.system = system;
 	}
-	
+
 	public void SetInputStream(InputStream in) {
 		this.in = new Scanner(in);
 	}

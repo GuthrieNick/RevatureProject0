@@ -24,9 +24,4 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 		//TODO: Implement AdminCommandSystem.cancelAccount()
 		
 	}
-	
-	@Command(brief="")
-	public int testLONG() {
-		return 3;
-	}
 }

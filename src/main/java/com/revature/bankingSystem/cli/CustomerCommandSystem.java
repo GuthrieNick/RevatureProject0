@@ -24,6 +24,26 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 		
 		return null;
 	}
+	
+	@Command(brief="Transfer money from one account to another. Can be between two of your accounts or with an account owned by someone else.")
+	public void transfer() {
+		
+	}
+	
+	@Command(brief="Log a new transaction")
+	public void newTransaction() {
+		
+	}
+	
+	@Command(brief="Log a deposit")
+	public void deposit() {
+		
+	}
+	
+	@Command(brief="Log a withdrawal")
+	public void withdraw() {
+		
+	}
 }
 
 

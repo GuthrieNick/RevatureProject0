@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.revature.bankingSystem.models.User;
-import com.revature.exceptions.UserDoesNotExistException;
 
 
 public class UserDao {

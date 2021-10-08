@@ -1,7 +1,6 @@
 package com.revature.cli;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.*;
 
 /**
  * Utility class for CLI package.
