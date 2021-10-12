@@ -12,6 +12,7 @@ import java.util.List;
 import com.revature.bankingSystem.models.Account;
 import com.revature.bankingSystem.models.Application;
 import com.revature.bankingSystem.models.JointApplication;
+import com.revature.bankingSystem.models.User;
 
 public class ApplicationDao {
 	private static ConnectionUtil conUtil = ConnectionUtil.getConnectionUtil();
@@ -84,9 +85,18 @@ public class ApplicationDao {
 			rs.next();
 			Application application;
 			if (rs.getInt(3) != 0)
-				application = new JointApplication(rs.getInt(1), rs.getInt(2), rs.getInt(3), Account.Type.values()[rs.getInt(4)]);
+				application = new JointApplication(
+						rs.getInt(1),
+						UserDao.getUserByID(rs.getInt(2)),
+						UserDao.getUserByID(rs.getInt(3)),
+						Account.Type.values()[rs.getInt(4)]
+				);
 			else
-				application = new Application(rs.getInt(1), rs.getInt(2), Account.Type.values()[rs.getInt(4)]);
+				application = new Application(
+						rs.getInt(1),
+						UserDao.getUserByID(rs.getInt(2)),
+						Account.Type.values()[rs.getInt(4)]
+				);
 			
 			con.setAutoCommit(true);
 			return application;
@@ -105,13 +115,99 @@ public class ApplicationDao {
 	public static List<Application> peekApplications(int userId) {
 		Connection con = conUtil.getConnection();
 		List<Application> apps = new ArrayList<Application>();
-		
+		String sql = "select a.id, a.acct_type, u1.*, u2.* "
+				+ "FROM applications a "
+				+ "left join joint_applications j on a.id=j.app_id and (seconded=NULL OR seconded=true) "
+				+ "inner join users u1 on u1.id=a.user_id "
+				+ "left join users u2 on u2.id=j.user_id";
 		try {
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM applications WHERE user_id=?");
+			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setInt(1, userId);
 			ResultSet rs = ps.executeQuery();
+			User user1, user2;
 			while (rs.next()) {
-				apps.add(new Application(rs.getInt(3), rs.getInt(1), Account.Type.values()[rs.getInt(2)]));
+				user1 = new User(rs.getInt(3), rs.getString(4), rs.getString(5), User.getLevel(rs.getInt(6)));
+				if (rs.getInt(7) != 0) {
+					user2 = new User(rs.getInt(7), rs.getString(8), rs.getString(9), User.getLevel(rs.getInt(10)));
+					apps.add(new JointApplication(rs.getInt(1), user1, user2, Account.getType(rs.getInt(2))));
+				} else apps.add(new Application(rs.getInt(1), user1, Account.getType(rs.getInt(2))));
+				
+			}
+			return apps;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Set the seconded attribute of a row to true.
+	 * @param appId ID of application to second
+	 * @return If the statement was executed
+	 */
+	public static boolean secondJointApplication(int appId) {
+		Connection con = conUtil.getConnection();
+		try {
+			PreparedStatement ps = con.prepareStatement("UPDATE joint_applications set seconded=TRUE where app_id=?");
+			ps.setInt(1, appId);
+			ps.execute();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * A user refuses to create a joint account with another
+	 * @param app Application to refuse
+	 * @return If the application refusal was registered by the database
+	 */
+	public static boolean refuseJointApplication(JointApplication app) {
+		Connection con = conUtil.getConnection();
+		
+		try {
+			// Notify first user of application denial
+			PreparedStatement ps = con.prepareStatement("INSERT INTO denied_applications (user_id, type) VALUES (?, ?)");
+			ps.setInt(1, app.getUserId());
+			ps.setInt(2, app.getAcctType().ordinal());
+			ps.execute();
+			
+			// Remove application from joint_applications table
+			ps = con.prepareStatement("DELETE FROM joint_applications WHERE id=?");
+			ps.setInt(1, app.getId());
+			ps.execute();
+			
+			// Remove application from applications table
+			ps = con.prepareStatement("DELETE FROM applications WHERE id=?");
+			ps.setInt(1, app.getId());
+			ps.execute();
+
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public static List<JointApplication> getPendingJointApplications(int userId) {
+		Connection con = conUtil.getConnection();
+		List<JointApplication> apps = new ArrayList<JointApplication>();
+		String sql = "SELECT * FROM joint_applications j "
+				+ "INNER JOIN applications a ON a.id=j.app_id AND j.user_id=? AND j.seconded=false, "
+				+ "users u1, users u2 where u1.id=a.user_id and u2.id=j.user_id";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, userId);
+			ResultSet rs = ps.executeQuery();
+			User user1, user2;
+			while (rs.next()) {
+				user1 = new User(rs.getInt(7), rs.getString(8), rs.getString(9), User.getLevel(rs.getInt(10)));
+				user2 = new User(rs.getInt(11), rs.getString(12), rs.getString(13), User.getLevel(rs.getInt(14)));
+				apps.add(new JointApplication(rs.getInt(1), user1, user2, Account.getType(rs.getInt(5))));
 			}
 			return apps;
 		} catch (SQLException e) {
@@ -157,7 +253,7 @@ public class ApplicationDao {
 		try {
 			CallableStatement cs = con.prepareCall("CALL create_joint_application(?, ?, ?)");
 			cs.setInt(1, application.getUserId());
-			cs.setInt(2, application.getSecond_user_id());
+			cs.setInt(2, application.getSecondUserId());
 			cs.setInt(3, application.getAcctType().ordinal());
 			cs.execute();
 			return true;
@@ -182,6 +278,33 @@ public class ApplicationDao {
 			PreparedStatement ps = con
 					.prepareStatement("INSERT INTO approved_applications (user_id, acct_id) VALUES (?, ?)");
 			ps.setInt(1, app.getUserId());
+			ps.setInt(2, acct_id);
+			ps.execute();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Approve a joint application
+	 * @param app Application to approve
+	 * @param acct_id ID of account created by the application
+	 * @return If the approval was registered in the database
+	 */
+	public static boolean approveJointApplication(JointApplication app, int acct_id) {
+		Connection con = conUtil.getConnection();
+		
+		try {
+			PreparedStatement ps = con.prepareStatement("INSERT INTO approved_applications (user_id, acct_id) VALUES (?, ?)");
+			ps.setInt(1, app.getUserId());
+			ps.setInt(2, acct_id);
+			ps.execute();
+			
+			ps = con.prepareStatement("INSERT INTO approved_applications (user_id, acct_id) VALUES (?, ?)");
+			ps.setInt(1, app.getSecondUserId());
 			ps.setInt(2, acct_id);
 			ps.execute();
 			return true;
@@ -222,9 +345,9 @@ public class ApplicationDao {
 	 */
 	public static boolean denyJointApplication(JointApplication app) {
 		boolean first = denyApplication(app);
-		int temp = app.getUserId();
-		app.setUserId(app.getSecond_user_id());
-		app.setSecond_user_id(temp);
+		User temp = app.getUser();
+		app.setUser(app.getSecondUser());
+		app.setSecondUser(temp);
 		return denyApplication(app) && first;
 	}
 }

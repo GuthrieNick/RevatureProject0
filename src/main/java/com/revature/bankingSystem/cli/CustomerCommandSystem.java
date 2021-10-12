@@ -20,6 +20,7 @@ import com.revature.exceptions.UserExitException;
  */
 public class CustomerCommandSystem extends BankingCommandSystem {
 	private List<Account> accounts;
+	private List<JointApplication> pendingJoints = null;
 
 	/**
 	 * One argument constructor. Passes User param to base class.
@@ -33,6 +34,10 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 		
 		for (Account.Type type : ApplicationDao.getDeniedApplications(customer.getId()))
 			TellUser("Unfortunately your requested " + type + " account was not approved.");
+		
+		pendingJoints = ApplicationDao.getPendingJointApplications(customer.getId());
+		if (pendingJoints != null && pendingJoints.size() > 0)
+			TellUser("You have pending joint applications to approve. Use the 'joint-apps' command to view them.");
 	}
 
 	private Account getAccount(int id) {
@@ -58,11 +63,35 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 			}
 	}
 	
+	/**
+	 * @return
+	 */
+	@Command(brief = "Approve or reject pending joint applications")
+	public String jointApps() {
+		if (pendingJoints.size() == 0)
+			return "You have no pending joint applications currently.";
+		
+		for (JointApplication app : pendingJoints) {
+			TellUser(app.toString());
+			if (YesOrNo("Submit this application?")) {
+				if (ApplicationDao.secondJointApplication(app.getId()))
+					TellUser("Application created and waiting for approval.");
+			} else {
+				
+			}
+		}
+		
+		return "All joint applications have been considered.";
+	}
+	
+	/**
+	 * @return
+	 */
 	@Command(brief = "View list of accounts")
 	public String accounts() {
 		StringBuilder sb = new StringBuilder();
 		for (Account account : accounts)
-			sb.append(account.toString());
+			sb.append(account.toString()).append('\n');
 		return sb.toString();
 	}
 
@@ -88,15 +117,17 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 				joint_owner = UserDao.getUserByUsername(username);
 				if (joint_owner == null)
 					TellUser("Error: User with that name could not be found. Try again.");
-				else
+				else {
+					TellUser("Creating joint application with " + username + "...");
 					break;
+				}
 			}
 			
-			JointApplication app = new JointApplication(getUser().getId(), joint_owner.getId(), type == 'c' ? Account.Type.Checking : Account.Type.Savings);
+			JointApplication app = new JointApplication(getUser(), joint_owner, type == 'c' ? Account.Type.Checking : Account.Type.Savings);
 			if (ApplicationDao.submitJointApplication(app))
 				return "Application submitted successfully.";
 		} else {
-			Application app = new Application(getUser().getId(), type == 'c' ? Account.Type.Checking : Account.Type.Savings);
+			Application app = new Application(getUser(), type == 'c' ? Account.Type.Checking : Account.Type.Savings);
 			if (ApplicationDao.submitApplication(app))
 				return "Application submitted successfully.";
 		}
@@ -139,7 +170,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 						return "Error: You must withdraw from one of your own accounts.\nTransaction cancelled.";
 					int temp = origin;
 					origin = destination;
-					destination = origin;
+					destination = temp;
 				}
 				break;
 			}
@@ -225,11 +256,9 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 	public String closeAccount() {
 		String acct;
 		Account account_to_close = null;
-		boolean acct_found;
 
 		// Get account id
 		while (true) {
-			acct_found = false;
 			acct = GetInput("Enter the name of the account you wish to close or 'list' to view your accounts: ");
 			if (acct.equals("exit"))
 				return "Account closing cancelled.";

@@ -21,7 +21,7 @@ public class AccountService {
 	 * @return If the application was successfully approved
 	 */
 	public static boolean approveApplication(Application app) {
-		Account acct = AccountDao.createAccount(new Account(app.getUserId(), app.getAcctType()));
+		Account acct = AccountDao.createAccount(new Account(app.getUser(), app.getAcctType()));
 		Connection con = conUtil.getConnection();
 		
 		try {

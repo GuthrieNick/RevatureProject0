@@ -4,6 +4,14 @@ public class User {
 	public enum Level {
 		Customer, Employee, Admin
 	};
+	public static Level getLevel(int x) {
+		switch (x) {
+		case 0: return Level.Customer;
+		case 1: return Level.Employee;
+		case 2: return Level.Admin;
+		default: return null;
+		}
+	}
 
 	private Level level;
 	private int id;

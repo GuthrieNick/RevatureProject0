@@ -4,28 +4,41 @@ public class Account {
 	public enum Type {
 		Savings, Checking
 	};
+	
+	/**
+	 * Convert a number to its type
+	 * @param x
+	 * @return
+	 */
+	public static Type getType(int x) {
+		switch (x) {
+		case 0: return Type.Savings;
+		case 1: return Type.Checking;
+		default: return null;
+		}
+	}
 
 	private int id;
-	int ownerId;
-	Type type;
-	double balance = 0;
+	private User user;
+	private Type type;
+	private double balance = 0;
 
-	public Account(int id, int owner_id, Type type, double balance) {
+	public Account(int id, User owner, Type type, double balance) {
 		super();
 		this.id = id;
-		this.ownerId = owner_id;
+		this.user = owner;
 		this.type = type;
 		this.balance = balance;
 	}
 
-	public Account(int owner_id, Type type) {
+	public Account(User owner, Type type) {
 		super();
-		this.ownerId = owner_id;
+		this.user = owner;
 		this.type = type;
 	}
 	
 	public Account(Application app) {
-		this.ownerId = app.getUserId();
+		this.user = app.getUser();
 		this.type = app.getAcctType();
 		this.balance = 0;
 	}
@@ -37,13 +50,17 @@ public class Account {
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	public int getOwnerId() {
-		return ownerId;
+	
+	public User getOwner() {
+		return this.user;
 	}
 
-	public void setOwnerId(int owner_id) {
-		this.ownerId = owner_id;
+	public int getOwnerId() {
+		return user.getId();
+	}
+
+	public void setOwner(User owner) {
+		this.user = owner;
 	}
 
 	public Type getType() {

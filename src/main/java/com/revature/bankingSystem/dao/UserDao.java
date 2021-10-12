@@ -47,7 +47,29 @@ public class UserDao {
 			e.printStackTrace();
 		}
 		
-		return null;		
+		return null;
+	}
+	
+	/**
+	 * Create a User object based on the row returned from selecting by an ID.
+	 * @param id ID of user to look for
+	 * @return User object created from returned row
+	 */
+	public static User getUserByID(int id) {
+		Connection con = conUtil.getConnection();
+		String sql = "SELECT * FROM users WHERE id=?";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			
+			rs.next();
+			return new User(rs.getInt(1), rs.getString(2), rs.getString(3), User.Level.values()[rs.getInt(4)]);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	/**

@@ -1,28 +1,32 @@
 package com.revature.bankingSystem.models;
 
 public class JointApplication extends Application {
-	int second_user_id;
+	User secondUser;
 
-	public JointApplication(int first_user_id, int second_user_id, Account.Type type) {
-		super(first_user_id, type);
-		this.second_user_id = second_user_id;
+	public JointApplication(User firstUser, User secondUser, Account.Type type) {
+		super(firstUser, type);
+		this.secondUser = secondUser;
 	}
 	
-	public JointApplication(int id, int first_user_id, int second_user_id, Account.Type type) {
-		super(id, first_user_id, type);
-		this.second_user_id = second_user_id;
+	public JointApplication(int id, User firstUser, User secondUser, Account.Type type) {
+		super(id, firstUser, type);
+		this.secondUser = secondUser;
 	}
 
-	public int getSecond_user_id() {
-		return second_user_id;
+	public int getSecondUserId() {
+		return secondUser.getId();
+	}
+	
+	public User getSecondUser() {
+		return this.secondUser;
 	}
 
-	public void setSecond_user_id(int second_user_id) {
-		this.second_user_id = second_user_id;
+	public void setSecondUser(User user) {
+		this.secondUser = user;
 	}
 
 	@Override
 	public String toString() {
-		return "JointApplication [second_user_id=" + second_user_id + "]";
+		return "Joint " + super.toString() + " and User " + secondUser.getUsername();
 	}
 }

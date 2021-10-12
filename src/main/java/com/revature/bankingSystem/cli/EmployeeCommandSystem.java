@@ -21,24 +21,37 @@ public class EmployeeCommandSystem extends BankingCommandSystem {
 	public String application() {
 		Application application = ApplicationDao.getApplication();
 		if (application.getId() == 0)
-			return "There are currently no open applications."
-					+ "";
+			return "There are currently no open applications.";
 		Account account = null;
 		
 		TellUser(application.toString());
 		if (YesOrNo("Approve account?")) {
-			if (application.getClass() == JointApplication.class)
-				account = AccountDao.createAccount(new JointAccount((JointApplication)application));
-			else
-				account = AccountDao.createAccount(new Account(application));
-			
-			if (account != null) { 
-				ApplicationDao.approveApplication(application, account.getId());
-				return "Application approved.";
+			if (application.getClass() == JointApplication.class) {
+				account = AccountDao.createJointAccount(new JointAccount((JointApplication)application));
+				if (account != null) {
+					ApplicationDao.approveJointApplication((JointApplication)application, account.getId());
+					return "Joint application approved.";
+				}
+				
+				return "Error: Application could not be approved.";
 			}
-			return "Error: Application could not be approved.";
+			
+			else {
+				account = AccountDao.createAccount(new Account(application));
+				if (account != null) {
+					ApplicationDao.approveApplication(application, account.getId());
+					return "Application approved.";
+				}
+				
+				return "Error: Application could not be approved.";
+			}
+			
 		} else {
-			if (ApplicationDao.denyApplication(application))
+			if (application.getClass() == JointApplication.class) {
+				if (ApplicationDao.denyJointApplication((JointApplication)application))
+					return "Joint application denied.";
+			}
+			else if (ApplicationDao.denyApplication(application))
 				return "Application denied.";
 		}
 		

@@ -1,8 +1,6 @@
 //TODO: Documentation
-//TODO: Logs
+//TODO: Log every attempted database action
 //TODO: Test service layer and command line interpreter
-//TODO: Implement joint accounts 
-//TODO: Admins creating new employee accounts
 import java.util.Scanner;
 
 import com.revature.bankingSystem.cli.AdminCommandSystem;
