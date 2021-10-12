@@ -13,16 +13,16 @@ public final class Commands {
 	 * Interpret the CLI type of a string's contents
 	 * @param value Value to interpret
 	 * @return "integer", "float", or "string" depending on how the passed in value is interpreted.
-	 *
-	private static String getValueType(String value) {
+	 */
+	public static String getValueType(String value) {
 		boolean i = false;
 		try {
 			Double.parseDouble(value);
 			i = true;
 			Integer.parseInt(value);
-			return "float";
+			return "integer";
 		} catch (NumberFormatException e) {
-			if (i) return "integer";
+			if (i) return "float";
 			return "string";
 		}
 	}

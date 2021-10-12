@@ -1,10 +1,7 @@
 //TODO: Documentation
-//TODO: Customers applying for accounts updates the database
+//TODO: Logs
 //TODO: Test service layer and command line interpreter
-//TODO: Employees can approve/deny accounts
 //TODO: Implement joint accounts 
-//TODO: Create a stored procedur or trigger
-//TODO: Changing passwords
 //TODO: Admins creating new employee accounts
 import java.util.Scanner;
 
@@ -28,6 +25,11 @@ public class BankingSystem {
 
 	public static final Scanner scanner = new Scanner(System.in);
 	
+	/**
+	 * Check if a username is valid. All characters must be alphanumeric.
+	 * @param username Username to check
+	 * @return If the username is valid
+	 */
 	public static boolean isValidUsername(String username) {
 		for (char i : username.toCharArray())
 			if (!Character.isLetterOrDigit(i))
@@ -43,8 +45,6 @@ public class BankingSystem {
 	 */
 	public static void main(String[] args) {
 		User person = null;
-		
-		System.out.println("Enter 'exit' to quit program.");
 
 		if (args.length > 0 && args[0] == "-n") {
 			System.out.println("Welcome new user!");

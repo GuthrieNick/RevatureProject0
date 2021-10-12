@@ -21,4 +21,8 @@ public class JointApplication extends Application {
 		this.second_user_id = second_user_id;
 	}
 
+	@Override
+	public String toString() {
+		return "JointApplication [second_user_id=" + second_user_id + "]";
+	}
 }

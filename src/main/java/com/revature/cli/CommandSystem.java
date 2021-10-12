@@ -4,6 +4,8 @@ import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.revature.exceptions.UserExitException;
+
 /**
  * 
  * @author guthr
@@ -56,6 +58,40 @@ public abstract class CommandSystem {
 	 * @return String to print to the user
 	 */
 	public abstract String InputPrompt();
+	
+	/**
+	 * Prompts the user to answer a yes or no question
+	 * @param prompt Question to answer
+	 * @return True if they answer yes, false if no
+	 */
+	protected final boolean YesOrNo(String prompt) {
+		String input = GetInput(prompt + "(Y/N) ");
+		return Character.toLowerCase(input.charAt(0)) == 'y';
+	}
+	
+	protected final int GetInt(String prompt) throws UserExitException {
+		String input = GetInput(prompt);
+		if (input.equals("exit"))
+			throw new UserExitException();
+		if (!Commands.getValueType(input).equals("integer")) {
+			TellUser("Error: Input must be an integer number.");
+			return GetInt(prompt);
+		}
+		
+		return Integer.parseInt(input);
+	}
+	
+	protected final double GetDouble(String prompt) throws UserExitException {
+		String input = GetInput(prompt);
+		if (input.equals("exit"))
+			throw new UserExitException();
+		if (Commands.getValueType(input).equals("string")) {
+			TellUser("Error: Input must be a number.");
+			return GetDouble(prompt);
+		}
+		
+		return Double.parseDouble(input);
+	}
 
 	/**
 	 * Prompt user with a message and retrieve their input from the command line

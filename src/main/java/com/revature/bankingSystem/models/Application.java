@@ -4,20 +4,20 @@ import com.revature.bankingSystem.models.Account.Type;
 
 public class Application {
 	private int id;
-	private int user_id;
-	private Account.Type acct_type;
+	private int userId;
+	private Account.Type acctType;
 
 	public Application(int id, int user_id, Type acct_type) {
 		super();
 		this.id = id;
-		this.user_id = user_id;
-		this.acct_type = acct_type;
+		this.userId = user_id;
+		this.acctType = acct_type;
 	}
 
 	public Application(int user_id, Type acct_type) {
 		super();
-		this.user_id = user_id;
-		this.acct_type = acct_type;
+		this.userId = user_id;
+		this.acctType = acct_type;
 	}
 
 	public int getId() {
@@ -28,20 +28,24 @@ public class Application {
 		this.id = id;
 	}
 
-	public int getUser_id() {
-		return user_id;
+	public int getUserId() {
+		return userId;
 	}
 
-	public void setUser_id(int user_id) {
-		this.user_id = user_id;
+	public void setUserId(int user_id) {
+		this.userId = user_id;
 	}
 
 	public Account.Type getAcctType() {
-		return acct_type;
+		return acctType;
 	}
 
 	public void setAcctType(Account.Type acct_type) {
-		this.acct_type = acct_type;
+		this.acctType = acct_type;
 	}
 
+	@Override
+	public String toString() {
+		return "Application [id=" + id + ", userId=" + userId + ", acctType=" + acctType + "]";
+	}
 }

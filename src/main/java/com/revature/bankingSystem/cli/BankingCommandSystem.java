@@ -1,9 +1,11 @@
 package com.revature.bankingSystem.cli;
 
+import com.revature.bankingSystem.dao.AccountDao;
 import com.revature.bankingSystem.dao.UserDao;
 import com.revature.bankingSystem.models.User;
 import com.revature.cli.Command;
 import com.revature.cli.CommandSystem;
+import com.revature.cli.Commands;
 import com.revature.log.Logging;
 
 public abstract class BankingCommandSystem extends CommandSystem {
@@ -23,6 +25,38 @@ public abstract class BankingCommandSystem extends CommandSystem {
 	protected User getUser() {
 		return user;
 	}
+	
+	/**
+	 * Prompt the user to input an account number and convert it to an integer
+	 * @param msg Message to prompt the user
+	 * @return User account input converted to an integer
+	 */
+	protected int getAccountNumber(String msg) {
+		String input;
+		int acct;
+		
+		// Input loop
+		while (true) {
+			input = GetInput(msg);
+			
+			// Stop looking for an account number
+			if (input.equals("exit"))
+				return -1;
+			
+			// Check account number is an integer and positive
+			else if (!Commands.getValueType(input).equals("integer") || (acct = Integer.parseInt(input)) < 0) 
+				TellUser("Error: That is not a valid account number. Account numbers are positive integers.");
+			
+			// Make sure account exists
+			else if (AccountDao.getAccount(acct) == null)
+					TellUser("Error: That account does not exist.\n");
+			
+			// All above is true
+			else break;
+		}
+		
+		return acct;
+	}
 
 	@Override
 	public String InputPrompt() { return user.getLevel() + ":" + user.getUsername() + ">>>"; }
@@ -36,6 +70,7 @@ public abstract class BankingCommandSystem extends CommandSystem {
 			Logging.logger.warn("User tried to change password, entered wrong password");
 			return "Error: That password does not match. Password could not be changed.";
 		}
+		
 		String new_password = GetInput("Enter your new password: ");
 		String password_check = GetInput("Enter your new password again: ");
 		

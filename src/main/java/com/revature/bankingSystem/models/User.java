@@ -26,8 +26,8 @@ public class User {
 
 	public User(int id, String username, String password, Level level) {
 		super();
-		this.level = level;
 		this.id = id;
+		this.level = level;
 		this.username = username;
 		this.password = password;
 	}
