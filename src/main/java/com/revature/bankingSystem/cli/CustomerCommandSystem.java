@@ -235,12 +235,12 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 				return "Account closing cancelled.";
 			else if (acct.equals("list")) {
 				for (Account account : accounts)
-					TellUser(account.toString() + "\n");
+					TellUser(account.toString());
 				continue;
 			} else if (!Commands.getValueType(acct).equals("integer"))
-				TellUser("Error: '" + acct + "' is not an account number. Please try again.\n");
+				TellUser("Error: '" + acct + "' is not an account number. Please try again.");
 			else if ((account_to_close = getAccount(Integer.parseInt(acct))) == null)
-				TellUser("Error: You do not have an account with ID " + acct + ".\n");
+				TellUser("Error: You do not have an account with ID " + acct + ".");
 			else
 				break;
 		}
@@ -248,7 +248,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 		// If balance is nonzero, select account to put remaining balance into
 		if (account_to_close.getBalance() > 0) {
 			int receiver_id;
-			TellUser("This account has a nonzero balance.\n");
+			TellUser("This account has a nonzero balance.");
 			while (true) {
 				
 				try {
@@ -259,6 +259,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 						continue;
 					} else {
 						if (AccountDao.closeAccount(account_to_close, receiver)) {
+							receiver.addToBalance(account_to_close.getBalance());
 							removeAccount(account_to_close.getId());
 							return "Account successfully closed.";
 						}
@@ -266,7 +267,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 					}
 				} catch (UserExitException e) {
 					if (YesOrNo("Do you wish to end closing an account?"))
-						return "Account closing cancelled.";
+						return "Account not closed.";
 					else
 						continue;
 				}

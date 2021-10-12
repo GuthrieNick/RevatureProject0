@@ -50,6 +50,11 @@ public class UserDao {
 		return null;		
 	}
 	
+	/**
+	 * @param user
+	 * @return
+	 * @throws SQLException
+	 */
 	public static boolean createUser(User user) throws SQLException {
 		Connection con = conUtil.getConnection();
 		String sql = "INSERT INTO users (username, password, level) VALUES (?,?,?)";
