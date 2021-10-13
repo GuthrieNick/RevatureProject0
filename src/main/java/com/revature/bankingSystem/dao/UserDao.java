@@ -14,7 +14,7 @@ import com.revature.bankingSystem.models.User;
 public class UserDao {
 	private static ConnectionUtil conUtil = ConnectionUtil.getConnectionUtil();
 	
-	public static List<User> getAllUsers() {
+	public List<User> getAllUsers() {
 		Connection con = conUtil.getConnection();
 		String sql = "SELECT * from users";
 		List<User> users = new ArrayList<User>();
@@ -33,7 +33,7 @@ public class UserDao {
 		return null;
 	}
 	
-	public static User getUserByUsername(String username) {
+	public User getUserByUsername(String username) {
 		Connection con = conUtil.getConnection();
 		String sql = "SELECT * FROM users WHERE username=?";
 		try {
@@ -55,7 +55,7 @@ public class UserDao {
 	 * @param id ID of user to look for
 	 * @return User object created from returned row
 	 */
-	public static User getUserByID(int id) {
+	public User getUserByID(int id) {
 		Connection con = conUtil.getConnection();
 		String sql = "SELECT * FROM users WHERE id=?";
 		try {
@@ -77,7 +77,7 @@ public class UserDao {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static boolean createUser(User user) throws SQLException {
+	public boolean createUser(User user) throws SQLException {
 		Connection con = conUtil.getConnection();
 		String sql = "INSERT INTO users (username, password, level) VALUES (?,?,?)";
 		
@@ -85,10 +85,11 @@ public class UserDao {
 		ps.setString(4, user.getUsername());
 		ps.setString(5, user.getPassword());
 		ps.setInt(3, user.getLevel().ordinal());
-		return ps.execute();
+		ps.execute();
+		return true;
 	}
 	
-	public static boolean updateUser(User user) {
+	public boolean updateUser(User user) {
 		Connection con = conUtil.getConnection();
 		String sql = "UPDATE users SET username=?, password=?, level=? WHERE id=?";
 		try {
@@ -105,7 +106,7 @@ public class UserDao {
 		return false;
 	}
 	
-	public static boolean deleteUser(User user) {
+	public boolean deleteUser(User user) {
 		Connection con = conUtil.getConnection();
 		String sql = "DELETE FROM users WHERE id=?";
 		try {

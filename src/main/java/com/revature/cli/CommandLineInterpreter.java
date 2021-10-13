@@ -146,6 +146,6 @@ public class CommandLineInterpreter {
 	}
 
 	public void SetInputStream(InputStream in) {
-		this.in = new Scanner(in);
+		CommandLineInterpreter.in = new Scanner(in);
 	}
 }

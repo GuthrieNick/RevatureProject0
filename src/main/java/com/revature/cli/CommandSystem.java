@@ -35,8 +35,8 @@ public abstract class CommandSystem {
 	}
 
 	/**
-	 * Tell the system what command line interpreter to use for input/output.
-	 * Used in the CommandLineInterpreter constructor.
+	 * Tell the system what command line interpreter to use for input/output. Used
+	 * in the CommandLineInterpreter constructor.
 	 * 
 	 * @param cli Command line interpreter associated with this command system.
 	 */
@@ -58,9 +58,10 @@ public abstract class CommandSystem {
 	 * @return String to print to the user
 	 */
 	public abstract String InputPrompt();
-	
+
 	/**
 	 * Prompts the user to answer a yes or no question
+	 * 
 	 * @param prompt Question to answer
 	 * @return True if they answer yes, false if no
 	 */
@@ -68,7 +69,7 @@ public abstract class CommandSystem {
 		String input = GetInput(prompt + "(Y/N) ");
 		return Character.toLowerCase(input.charAt(0)) == 'y';
 	}
-	
+
 	protected final int GetInt(String prompt) throws UserExitException {
 		String input = GetInput(prompt);
 		if (input.equals("exit"))
@@ -77,10 +78,10 @@ public abstract class CommandSystem {
 			TellUser("Error: Input must be an integer number.");
 			return GetInt(prompt);
 		}
-		
+
 		return Integer.parseInt(input);
 	}
-	
+
 	protected final double GetDouble(String prompt) throws UserExitException {
 		String input = GetInput(prompt);
 		if (input.equals("exit"))
@@ -89,7 +90,7 @@ public abstract class CommandSystem {
 			TellUser("Error: Input must be a number.");
 			return GetDouble(prompt);
 		}
-		
+
 		return Double.parseDouble(input);
 	}
 
@@ -105,7 +106,7 @@ public abstract class CommandSystem {
 	}
 
 	protected final void TellUser(String message) {
-		cli.OutStream().println(message);
+		CommandLineInterpreter.OutStream().println(message);
 	}
 
 	/**
@@ -113,22 +114,38 @@ public abstract class CommandSystem {
 	 * 
 	 * @return String holding contents of the help message
 	 */
-	@Command(brief = "Displays the list of commands available to the user.")
+	@Command(brief = "Displays the list of available commands")
 	public final String help() {
-		StringBuilder msg = new StringBuilder();
+		StringBuilder msg = new StringBuilder('\n');
 		Command annotation;
+		int longest = 4;
+		int x;
 
+		for (Method method : getClass().getMethods()) {
+			annotation = method.getDeclaredAnnotation(Command.class);
+			if (annotation != null) {
+				x = Commands.MethodToCommand(method).length();
+				if (x > longest)
+					longest = x;
+			}
+		}
+
+		String cmd;
 		// Iterate through every method skipping ones that don't have the Command
 		// annotation
 		// Add the command version of the method and its command brief to the string
 		// builder
 		for (Method method : getClass().getMethods()) {
 			annotation = method.getDeclaredAnnotation(Command.class);
-			if (annotation != null)
-				msg.append(Commands.MethodToCommand(method)).append(": ").append(annotation.brief()).append('\n');
+			if (annotation != null) {
+				cmd = Commands.MethodToCommand(method);
+				msg.append(cmd).append(" ".repeat(longest - cmd.length() + 2)).append(annotation.brief())
+						.append('\n');
+			}
 		}
 
-		msg.append(TerminatingCommand()).append(": Exit the system\n");
+		msg.append(TerminatingCommand()).append(" ".repeat(longest - TerminatingCommand().length() + 2))
+				.append("Exit the system\n");
 
 		return msg.toString();
 	}

@@ -43,6 +43,8 @@ public class BankingSystem {
 	 */
 	public static void main(String[] args) {
 		User person = null;
+		UserDao uDao = new UserDao();
+		UserService uServ = new UserService();
 
 		if (args.length > 0 && args[0] == "-n") {
 			System.out.println("Welcome new user!");
@@ -52,7 +54,7 @@ public class BankingSystem {
 			do {
 				System.out.print("Enter your desired username: ");
 				user = scanner.nextLine();
-				if (UserDao.getUserByUsername(user) != null) {
+				if (uDao.getUserByUsername(user) != null) {
 					Logging.logger.warn("User supplied username already in DB");
 					System.out.println("Error: Username already exists.");
 				} else if (!isValidUsername(user)) {
@@ -71,7 +73,7 @@ public class BankingSystem {
 			} while (true);
 
 			try {
-				person = UserService.signUpCustomer(user, pass);
+				person = uServ.signUpCustomer(user, pass);
 			} catch (UsernameExistsException e) {
 				System.out.println("Error: Username already taken. Account could not be created.");
 			}
@@ -90,7 +92,7 @@ public class BankingSystem {
 				return;
 
 			try {
-				person = UserService.logIn(username, password);
+				person = uServ.logIn(username, password);
 				break;
 			} catch (InvalidCredentialsException e) {
 				System.out.println("Error: Invalid username/password. Try again.");

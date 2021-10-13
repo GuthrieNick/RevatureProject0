@@ -1,15 +1,12 @@
 package com.revature.bankingSystem.cli;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.revature.bankingSystem.dao.AccountDao;
-import com.revature.bankingSystem.dao.ApplicationDao;
-import com.revature.bankingSystem.dao.UserDao;
 import com.revature.bankingSystem.models.Account;
 import com.revature.bankingSystem.models.Application;
 import com.revature.bankingSystem.models.JointApplication;
 import com.revature.bankingSystem.models.User;
-import com.revature.bankingSystem.services.AccountService;
 import com.revature.cli.Command;
 import com.revature.cli.Commands;
 import com.revature.exceptions.UserExitException;
@@ -24,18 +21,19 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 
 	/**
 	 * One argument constructor. Passes User param to base class.
+	 * 
 	 * @param customer User object to use for this command system.
 	 */
 	public CustomerCommandSystem(User customer) {
 		super(customer);
-		accounts = AccountDao.getUserAccounts(customer.getId());
-		for (int id : ApplicationDao.getApprovedApplications(customer.getId()))
+		accounts = acctDao.getUserAccounts(customer.getId());
+		for (int id : appDao.getApprovedApplications(customer.getId()))
 			TellUser(getAccount(id).getType() + " account # " + id + " was approved!");
-		
-		for (Account.Type type : ApplicationDao.getDeniedApplications(customer.getId()))
+
+		for (Account.Type type : appDao.getDeniedApplications(customer.getId()))
 			TellUser("Unfortunately your requested " + type + " account was not approved.");
-		
-		pendingJoints = ApplicationDao.getPendingJointApplications(customer.getId());
+
+		pendingJoints = appDao.getPendingJointApplications(customer.getId());
 		if (pendingJoints != null && pendingJoints.size() > 0)
 			TellUser("You have pending joint applications to approve. Use the 'joint-apps' command to view them.");
 	}
@@ -54,7 +52,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 				break;
 			}
 	}
-	
+
 	private void removeAccount(int id) {
 		for (int i = 0; i < accounts.size(); i++)
 			if (accounts.get(i).getId() == id) {
@@ -62,7 +60,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 				break;
 			}
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -70,20 +68,27 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 	public String jointApps() {
 		if (pendingJoints.size() == 0)
 			return "You have no pending joint applications currently.";
-		
-		for (JointApplication app : pendingJoints) {
-			TellUser(app.toString());
+
+		List<Integer> remove = new ArrayList<Integer>();
+
+		for (int i = 0; i < pendingJoints.size(); i++) {
+			TellUser(pendingJoints.get(i).toString());
 			if (YesOrNo("Submit this application?")) {
-				if (ApplicationDao.secondJointApplication(app.getId()))
+				if (applicationService.secondJointApplication(pendingJoints.get(i))) {
 					TellUser("Application created and waiting for approval.");
+				}
 			} else {
-				
+				TellUser("Error: Failed to submit application. Use 'joint-apps' command to resubmit later.");
 			}
 		}
-		
+
+		for (int i = remove.size() - 1; i > 0; i--) {
+			pendingJoints.remove(remove.get(i).intValue());
+		}
+
 		return "All joint applications have been considered.";
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -110,11 +115,13 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 				TellUser("Error: Input must be 'S' or 'C'.");
 		}
 
+		Application app;
+
 		if (YesOrNo("Is this a joint account?")) {
 			User joint_owner = null;
 			while (true) {
 				String username = GetInput("Enter the username of the joint owner: ");
-				joint_owner = UserDao.getUserByUsername(username);
+				joint_owner = uDao.getUserByUsername(username);
 				if (joint_owner == null)
 					TellUser("Error: User with that name could not be found. Try again.");
 				else {
@@ -122,15 +129,15 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 					break;
 				}
 			}
-			
-			JointApplication app = new JointApplication(getUser(), joint_owner, type == 'c' ? Account.Type.Checking : Account.Type.Savings);
-			if (ApplicationDao.submitJointApplication(app))
-				return "Application submitted successfully.";
-		} else {
-			Application app = new Application(getUser(), type == 'c' ? Account.Type.Checking : Account.Type.Savings);
-			if (ApplicationDao.submitApplication(app))
-				return "Application submitted successfully.";
-		}
+
+			app = new JointApplication(getUser(), joint_owner,
+					type == 'c' ? Account.Type.Checking : Account.Type.Savings);
+		} 
+		
+		else app = new Application(getUser(), type == 'c' ? Account.Type.Checking : Account.Type.Savings);
+		
+		if (applicationService.submitApplication(app))
+			return "Application submitted successfully.";
 
 		return "Error: An issue was encountered submitting the application. Please try again.";
 	}
@@ -184,20 +191,19 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 			for (Account account : accounts)
 				if (account.getId() == origin)
 
-					if (AccountService.transfer(origin, destination, amount)) {
+					if (accountService.transfer(origin, destination, amount)) {
 						Account a = getAccount(origin);
 						a.addToBalance(-amount);
 						setAccount(a);
-						
+
 						Account b = getAccount(destination);
 						if (b != null) {
 							b.addToBalance(amount);
 							setAccount(b);
 						}
-						
+
 						return "Transfer completed.";
-					}
-					else
+					} else
 						return "Error: An issue was encountered. Transfer could not be completed.";
 
 		return "Transaction cancelled.";
@@ -217,7 +223,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 		}
 
 		if (YesOrNo(String.format("Deposit $%.2f into account #%d?", amount, account.getId())))
-			account = AccountService.deposit(account, amount);
+			account = accountService.deposit(account, amount);
 
 		if (account == null)
 			return "Error: An issue was encountered in the database.\nDeposit cancelled.";
@@ -243,7 +249,7 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 			return "Error: Insufficient balance.\nWithdrawal cancelled.";
 
 		if (YesOrNo(String.format("Withdraw $%.2f from account #%d?", amount, account.getId())))
-			account = AccountService.withdraw(account, amount);
+			account = accountService.withdraw(account, amount);
 
 		if (account == null)
 			return "Error: An issue was encountered in the database.\nWithdrawal cancelled.";
@@ -279,20 +285,20 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 			int receiver_id;
 			TellUser("This account has a nonzero balance.");
 			while (true) {
-				
+
 				try {
 					receiver_id = GetInt("Enter a destination account to send the remainding funds: ");
-					Account receiver = AccountDao.getAccount(receiver_id);
+					Account receiver = acctDao.getAccount(receiver_id);
 					if (receiver == null) {
 						TellUser("Error: Account #" + receiver_id + " could not be found. Please try again.");
 						continue;
 					} else {
-						if (AccountDao.closeAccount(account_to_close, receiver)) {
+						if (accountService.closeAccount(account_to_close, receiver, getUser())) {
 							receiver.addToBalance(account_to_close.getBalance());
 							removeAccount(account_to_close.getId());
 							return "Account successfully closed.";
-						}
-						else return "Error: An issue prevented the account from being closed. Please try again.";
+						} else
+							return "Error: An issue prevented the account from being closed. Please try again.";
 					}
 				} catch (UserExitException e) {
 					if (YesOrNo("Do you wish to end closing an account?"))
@@ -302,12 +308,13 @@ public class CustomerCommandSystem extends BankingCommandSystem {
 				}
 			}
 		}
-		
-		else if (AccountDao.closeAccount(account_to_close.getId())) {
+
+		else if (accountService.closeAccount(account_to_close, getUser())) {
 			removeAccount(account_to_close.getId());
 			return "Account successfully closed.";
 		}
-		
-		else return "Error: An issue prevented the account from being closed. Please try again.";
+
+		else
+			return "Error: An issue prevented the account from being closed. Please try again.";
 	}
 }

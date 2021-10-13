@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class AccountDao {
 	 * @return Account object with values from returned row or null if account could
 	 *         not be found
 	 */
-	public static Account getAccount(int id) {
+	public Account getAccount(int id) {
 		Connection con = conUtil.getConnection();
 		String sql = "select a.id, a.type, a.balance, u1.*, u2.* "
 				+ "FROM accounts a "
@@ -57,7 +56,7 @@ public class AccountDao {
 	 * @param user_id User ID to use for retrieving accounts
 	 * @return List of Account objects owned by the user
 	 */
-	public static List<Account> getUserAccounts(int user_id) {
+	public List<Account> getUserAccounts(int user_id) {
 		List<Account> user_accts = new ArrayList<Account>();
 		Connection con = conUtil.getConnection();
 
@@ -93,7 +92,7 @@ public class AccountDao {
 	 * @param account Account object holding user ID and type
 	 * @return The account passed in updated with the ID and a balance of 0
 	 */
-	public static Account createAccount(Account account) {
+	public Account createAccount(Account account) {
 		Connection con = conUtil.getConnection();
 
 		try {
@@ -113,10 +112,10 @@ public class AccountDao {
 			e.printStackTrace();
 		}
 
-		return account;
+		return null;
 	}
 
-	public static JointAccount createJointAccount(JointAccount account) {
+	public JointAccount createJointAccount(JointAccount account) {
 		System.out.println("Creating joint account");
 		Connection con = conUtil.getConnection();
 
@@ -150,7 +149,7 @@ public class AccountDao {
 	 * @param acct_id ID of the account to delete
 	 * @return If the account was removed
 	 */
-	public static boolean closeAccount(int acct_id) {
+	public boolean closeAccount(int acct_id) {
 		Connection con = conUtil.getConnection();
 
 		try {
@@ -161,7 +160,7 @@ public class AccountDao {
 			ps = con.prepareStatement("DELETE FROM accounts WHERE id=?");
 			ps.setInt(1, acct_id);
 			ps.execute();
-			return true;
+			return (getAccount(acct_id) == null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -177,7 +176,7 @@ public class AccountDao {
 	 * @param receiver Account to transfer the funds to
 	 * @return If the account was successfully removed
 	 */
-	public static boolean closeAccount(Account account, Account receiver) {
+	public boolean closeAccount(Account account, Account receiver) {
 		return (account.getBalance() == 0 || transfer(account.getId(), receiver.getId(), account.getBalance()))
 				&& closeAccount(account.getId());
 	}
@@ -189,18 +188,14 @@ public class AccountDao {
 	 * @param amount Amount to deposit/withdraw from (+ = deposit, - = withdraw)
 	 * @return If the transfer was a success
 	 */
-	public static boolean transfer(int acct, double amount) {
+	public boolean transfer(int acct, double amount) {
 		Connection con = conUtil.getConnection();
 
 		try {
-			con.setAutoCommit(false);
-
-			CallableStatement cs = con.prepareCall("call transfer(?, ?)");
-			cs.setInt(1, acct);
-			cs.setBigDecimal(2, new BigDecimal(amount));
-
-			cs.execute();
-			con.setAutoCommit(true);
+			PreparedStatement ps = con.prepareStatement("update accounts set balance = balance + ? where id=?");
+			ps.setBigDecimal(1, new BigDecimal(amount));
+			ps.setInt(2, acct);
+			ps.execute();
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -217,7 +212,7 @@ public class AccountDao {
 	 * @param amount   Amount to transfer from sender to receiver
 	 * @return If the transfer was completed successfully
 	 */
-	public static boolean transfer(int sender, int receiver, double amount) {
+	public boolean transfer(int sender, int receiver, double amount) {
 		Connection con = conUtil.getConnection();
 
 		try {

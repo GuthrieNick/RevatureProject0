@@ -1,8 +1,12 @@
 package com.revature.bankingSystem.cli;
 
 import com.revature.bankingSystem.dao.AccountDao;
+import com.revature.bankingSystem.dao.ApplicationDao;
 import com.revature.bankingSystem.dao.UserDao;
 import com.revature.bankingSystem.models.User;
+import com.revature.bankingSystem.services.AccountService;
+import com.revature.bankingSystem.services.ApplicationService;
+import com.revature.bankingSystem.services.UserService;
 import com.revature.cli.Command;
 import com.revature.cli.CommandSystem;
 import com.revature.cli.Commands;
@@ -11,8 +15,26 @@ import com.revature.log.Logging;
 public abstract class BankingCommandSystem extends CommandSystem {
 	private User user;
 	
+	// Services
+	protected UserService userService;
+	protected AccountService accountService;
+	protected ApplicationService applicationService;
+	
+	// Data access objects
+	protected UserDao uDao;
+	protected AccountDao acctDao;
+	protected ApplicationDao appDao;
+	
+	
 	public BankingCommandSystem(User person) {
 		this.user = person;
+		userService = new UserService();
+		accountService = new AccountService();
+		applicationService = new ApplicationService();
+		
+		uDao = new UserDao();
+		acctDao = new AccountDao();
+		appDao = new ApplicationDao();
 	}
 	
 	protected boolean UpdateUser(User user) {
@@ -48,7 +70,7 @@ public abstract class BankingCommandSystem extends CommandSystem {
 				TellUser("Error: That is not a valid account number. Account numbers are positive integers.");
 			
 			// Make sure account exists
-			else if (AccountDao.getAccount(acct) == null)
+			else if (acctDao.getAccount(acct) == null)
 					TellUser("Error: That account does not exist.\n");
 			
 			// All above is true
@@ -81,7 +103,7 @@ public abstract class BankingCommandSystem extends CommandSystem {
 			
 		
 		user.setPassword(new_password);
-		if (UserDao.updateUser(user)) {
+		if (uDao.updateUser(user)) {
 			Logging.logger.info("User successfully changed password");
 			return "Password successfully changed.";
 		}

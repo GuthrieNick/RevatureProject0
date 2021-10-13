@@ -1,14 +1,10 @@
 package com.revature.bankingSystem.cli;
 
-import java.sql.SQLException;
-
-import com.revature.bankingSystem.dao.AccountDao;
-import com.revature.bankingSystem.dao.UserDao;
 import com.revature.bankingSystem.models.Account;
 import com.revature.bankingSystem.models.User;
-import com.revature.bankingSystem.services.AccountService;
 import com.revature.cli.Command;
 import com.revature.exceptions.UserExitException;
+import com.revature.exceptions.UsernameExistsException;
 
 public class AdminCommandSystem extends EmployeeCommandSystem {
 	public AdminCommandSystem(User person) {
@@ -19,15 +15,13 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 	public String assignEmployee() {
 		String username = GetInput("Enter the username of the new employee: ");
 		String password = GetInput("Enter the password of the new employee: ");
-		User newUser = new User(username, password, User.Level.Employee);
 
 		try {
-			UserDao.createUser(newUser);
-		} catch (SQLException e) {
-			return "Error: An issue was encountered. New employee could not be created.";
+			userService.assignEmployee(username, password);
+			return "Login credentials successfully added to the database.";
+		} catch (UsernameExistsException e) {
+			return "Error: Username already exists in the database. New employee could not be created.";
 		}
-
-		return "Login credentials successfully added to the database.";
 	}
 
 	@Command(brief = "Transfer money between two accounts")
@@ -64,7 +58,7 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 
 		if (YesOrNo(
 				String.format("Sending $%.2f from account #%d to account #%d, correct?", amount, origin, destination)))
-			if (AccountService.transfer(origin, destination, amount))
+			if (accountService.transfer(origin, destination, amount))
 				return "Transfer completed.";
 			else
 				return "Error: An issue was encountered. Transfer could not be completed.";
@@ -82,7 +76,7 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 		acct = getAccountNumber("Enter the number for the account you wish to close: ");
 		if (acct == -1)
 			return "Account closing cancelled.";
-		else account_to_close = AccountDao.getAccount(acct);
+		else account_to_close = acctDao.getAccount(acct);
 
 		// If balance is nonzero, select account to put remaining balance into
 		if (account_to_close.getBalance() > 0) {
@@ -93,12 +87,12 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 				
 				try {
 					receiver_id = GetInt("Enter a destination account to send the remainding funds: ");
-					Account receiver = AccountDao.getAccount(receiver_id);
+					Account receiver = acctDao.getAccount(receiver_id);
 					if (receiver == null) {
 						TellUser("Error: Account #" + receiver_id + " could not be found. Please try again.");
 						continue;
 					} else {
-						if (AccountDao.closeAccount(account_to_close, receiver)) {
+						if (accountService.closeAccount(account_to_close, receiver, getUser())) {
 							return "Account successfully closed.";
 						}
 						else return "Error: An issue prevented the account from being closed. Please try again.";
@@ -112,7 +106,7 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 			}
 		}
 		
-		else if (AccountDao.closeAccount(acct)) {
+		else if (accountService.closeAccount(account_to_close, getUser())) {
 			return "Account successfully closed.";
 		}
 		
@@ -130,7 +124,7 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 				return "Deposit cancelled.";
 			
 			try {
-				account = AccountDao.getAccount(Integer.parseInt(input));
+				account = acctDao.getAccount(Integer.parseInt(input));
 				if (account == null)
 					TellUser("Error: Could not find account #" + input + ". Please try again.");
 				else break;
@@ -148,7 +142,7 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 		}
 		
 		if (YesOrNo(String.format("Deposit $%.2f into account #%d?", amount, account.getId())))
-			account = AccountService.deposit(account, amount);
+			account = accountService.deposit(account, amount);
 
 		if (account == null)
 			return "Error: An issue was encountered in the database.\nDeposit cancelled.";
@@ -168,7 +162,7 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 				return "Withdrawal cancelled.";
 			
 			try {
-				account = AccountDao.getAccount(Integer.parseInt(input));
+				account = acctDao.getAccount(Integer.parseInt(input));
 				if (account == null)
 					TellUser("Error: Could not find account #" + input + ". Please try again.");
 				else break;
@@ -188,7 +182,7 @@ public class AdminCommandSystem extends EmployeeCommandSystem {
 			return "Error: Insufficient balance.\nWithdrawal cancelled.";
 
 		if (YesOrNo(String.format("Withdraw $%.2f from account #%d?", amount, account.getId())))
-			account = AccountService.withdraw(account, amount);
+			account = accountService.withdraw(account, amount);
 
 		if (account == null)
 			return "Error: An issue was encountered in the database.\nWithdrawal cancelled.";
