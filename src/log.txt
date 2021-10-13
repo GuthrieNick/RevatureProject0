@@ -5,3 +5,12 @@
 2021-10-07 17:11:13 WARN  Logging:14 - User supplied invalid username
 2021-10-11 21:46:24 WARN  Logging:19 - User supplied invalid password
 2021-10-12 15:08:26 WARN  Logging:19 - User supplied invalid password
+2021-10-13 07:54:17 WARN  Logging:30 - Unsuccessfull attempt to transfer $26.00 from Account #3349 to Account #4617
+2021-10-13 09:06:47 INFO  Logging:70 - $80.00 deposited into Savings Account #4617. New balance: $80.00
+2021-10-13 09:13:23 WARN  Logging:27 - User supplied invalid password
+2021-10-13 09:13:41 WARN  Logging:27 - User supplied invalid password
+2021-10-13 09:13:46 WARN  Logging:27 - User supplied invalid password
+2021-10-13 09:17:57 WARN  Logging:27 - User supplied invalid password
+2021-10-13 09:19:01 WARN  Logging:27 - User supplied invalid password
+2021-10-13 09:24:39 WARN  Logging:27 - User supplied invalid password
+2021-10-13 09:24:39 WARN  Logging:22 - User supplied invalid username
